@@ -1,0 +1,46 @@
+{
+  "name": "react-nodebird-front",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "antd": "^5.9.2",
+    "busboy": "^1.6.0",
+    "caniuse-lite": "^1.0.30001538",
+    "client-only": "^0.0.1",
+    "glob-to-regexp": "^0.4.1",
+    "graceful-fs": "^4.2.11",
+    "js-tokens": "^4.0.0",
+    "loose-envify": "^1.4.0",
+    "nanoid": "^3.3.6",
+    "next": "^13.5.2",
+    "object-assign": "^4.1.1",
+    "picocolors": "^1.0.0",
+    "postcss": "^8.4.14",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-is": "^16.13.1",
+    "scheduler": "^0.23.0",
+    "source-map-js": "^1.0.2",
+    "streamsearch": "^1.1.0",
+    "styled-components": "^6.0.8",
+    "styled-jsx": "^5.1.1",
+    "tslib": "^2.6.2",
+    "watchpack": "^2.4.0",
+    "zod": "^3.21.4"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build"
+  },
+  "author": "Hong Sung In",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.49.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  }
+}
