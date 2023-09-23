@@ -17,7 +17,9 @@ const AppLayout = ({ children }) => {
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
   // reducer가 된 후에는 useSelector를 이용해 값을 불러온다.
   // const isLoggedIn을 {}로 감싸면 state.user만 쓰고 불러올 수 있다. user 자체를 받아와서 isLoggedIn을 구조분해할당 할 수 있다.
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  // 최적화 때문에 둘 중 어느것을 사용할 지 정하면 된다.
+  // const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const { isLoggedIn } = useSelector((state) => state.user);
 
   return (
     <div>
