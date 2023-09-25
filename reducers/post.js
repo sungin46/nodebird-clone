@@ -10,7 +10,7 @@ export const initialState = {
         id: 1,
         nickname: "홍성인",
       },
-      content: "첫 번째 게시글 #해시태그 #익스프레스",
+      content: "첫 번째 게시글 #해시태그 #IVE #아이브",
       Images: [
         {
           src: "https://i.ytimg.com/vi/A7eDNlAWHZk/maxresdefault.jpg",
