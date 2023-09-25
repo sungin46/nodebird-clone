@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
-import { Button, Card, Popover } from "antd";
+import { Button, Card, List, Popover, Avatar } from "antd";
 import {
   EllipsisOutlined,
   HeartOutlined,
@@ -8,8 +8,12 @@ import {
   MessageOutlined,
   RetweetOutlined,
 } from "@ant-design/icons";
+// antd 4.x 버전에 있던 Comment가 5.x 버전으로 넘어오면서 @ant-design.compatible로 넘겨졌다.
+import { Comment } from "@ant-design/compatible";
 import { useSelector } from "react-redux";
 import PostImages from "./PostImages";
+import CommentForm from "./CommentForm";
+import PostCardContent from "./PostCardContent";
 
 const PostCard = ({ post }) => {
   // 옵셔널 체이닝 - JS2020버전에서 추가되었으며 중첩 객체에 빠르게 접근할 수 있다.
@@ -63,10 +67,29 @@ const PostCard = ({ post }) => {
         <Card.Meta
           avatar={post.User.nickname[0]}
           title={post.User.nickname}
-          description={post.content}
+          description={<PostCardContent postData={post.content} />}
         />
       </Card>
-      {commentFormOppened && <div>댓글을 달자</div>}
+      {commentFormOppened && (
+        <div>
+          {/* post를 넘기는 이유 : 댓글을 작성할 때 댓글은 게시글에 속해있고, 어떤 게시글에 댓글을 달 지 정보가 필요하다. 게시글의 id가 필요함 */}
+          <CommentForm post={post} />
+          <List
+            header={`${post.Comments.length}개의 댓글`}
+            itemLayout="horizontal"
+            dataSource={post.Comments}
+            renderItem={(item) => (
+              <li>
+                <Comment
+                  author={item.User.nickname}
+                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  content={item.content}
+                />
+              </li>
+            )}
+          />
+        </div>
+      )}
       {/* <CommnetForm />
       <Comments /> */}
     </div>
