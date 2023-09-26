@@ -7,13 +7,18 @@ import {
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 
+import createSagaMiddleware from "redux-saga";
+import rootSaga from "../sagas";
+
 const configureStore = () => {
-  const middlewares = [];
+  const sagaMiddleware = createSagaMiddleware();
+  const middlewares = [sagaMiddleware];
   const enhancer =
     process.env.NODE_ENV === "production"
       ? compose(applyMiddleware(...middlewares)) //applyMiddleware([])로 하면 에러가 난다. 직접 배열을 넣는 것이 아니라 spread 해서 넣어야한다.
       : composeWithDevTools(applyMiddleware(...middlewares));
   const store = createStore(reducer, enhancer);
+  store.sagaTask = sagaMiddleware.run(rootSaga);
   return store;
 };
 
