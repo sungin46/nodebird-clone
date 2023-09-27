@@ -79,6 +79,17 @@ const dummyPost = (data) => ({
   Comments: [],
 });
 
+const dummyCommnets = (data) => ({
+  id: shortId.generate(),
+  content: data,
+  User: {
+    id: 1,
+    nickname: "홍성인",
+  },
+  Images: [],
+  Comments: [],
+});
+
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_POST_REQUEST:
@@ -109,13 +120,24 @@ const reducer = (state = initialState, action) => {
         addCommentDone: false,
         addCommentError: null,
       };
-    case ADD_COMMENT_SUCCESS:
+    case ADD_COMMENT_SUCCESS: {
+      // 불변성을 지키기 위해 이렇게 만든다.
+      // 바뀌는 것만 새로운 객체로 만들고 원래 것은 참조만 해야한다.
+      // 그래야 메모리를 절약할 수 있다.
+      const postIndex = state.mainPosts.findIndex(
+        (v) => v.id === action.data.postId
+      );
+      const post = { ...state.mainPosts[postIndex] };
+      post.Comments = [dummyCommnets(action.data.content), ...post.Comments];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = post;
       return {
         ...state,
-        // dummyPost를 앞에 선언해야 최신글이 위에 올라온다.
-        addCommentLoading: true,
+        mainPosts,
+        addCommentLoading: false,
         addCommentDone: true,
       };
+    }
     case ADD_COMMENT_FAILURE:
       return {
         ...state,
