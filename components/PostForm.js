@@ -1,24 +1,30 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { Button, Form, Input } from "antd";
-import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost } from "../reducers/post";
+import useInput from "../hooks/useInput";
 
 const PostForm = () => {
   const dispatch = useDispatch();
-  const imageInput = useRef();
-  const { imagePaths } = useSelector((state) => state.post);
-  const [text, setText] = useState("");
-  const onChangeText = useCallback((e) => {
-    setText(e.target.value);
-  }, []);
+  const { imagePaths, addPostDone } = useSelector((state) => state.post);
+  const [text, onChangeText, setText] = useInput("");
+
+  useEffect(() => {
+    if (addPostDone) {
+      setText("");
+    }
+  }, [addPostDone]);
+
   const onSubmit = useCallback(() => {
-    dispatch(addPost);
-    setText(""); // textarea 비우기
-  }, []);
+    dispatch(addPost(text));
+    // setText(""); // textarea 비우기, 서버에서 에러가 나서 데이터를 받지 못할 경우 텍스트를 바로 지워버릴 수도 있기 때문에 다른곳으로
+  }, [text]);
+
+  const imageInput = useRef();
   const onClickImageUpload = useCallback(() => {
     imageInput.current.click();
   }, [imageInput.current]);
+
   return (
     <Form
       style={{ margin: "10px 0 20px" }}
@@ -41,14 +47,14 @@ const PostForm = () => {
         </Button>
       </div>
       <div>
-        {imagePaths.map((v) => {
+        {imagePaths.map((v) => (
           <div key={v} style={{ display: "block" }}>
             <img src={v} style={{ width: "200px" }} alt={v} />
             <div>
               <Button>제거</Button>
             </div>
-          </div>;
-        })}
+          </div>
+        ))}
       </div>
     </Form>
   );

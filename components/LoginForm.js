@@ -2,8 +2,8 @@ import React, { useCallback } from "react";
 import { Form, Input, Button } from "antd";
 import Link from "next/link";
 import styled from "styled-components";
-import useInput from "../hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
+import useInput from "../hooks/useInput";
 import { loginRequestAction } from "../reducers/user";
 
 // styled-components를 적용했는데 아직 적용이 되지 않는 이유는 styled-components에 SSR이 적용되지 않았기 때문이다.
@@ -17,22 +17,28 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const { isLoggingIn } = useSelector((state) => state.user);
-  const [id, onChangeId] = useInput("");
+  const { logInLoading } = useSelector((state) => state.user);
+  const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
 
   const onSubmitForm = useCallback(() => {
     // console.log(id, password);
     // reducer의 action을 받아와서 dispatch한다.
-    dispatch(loginRequestAction({ id, password }));
-  }, [id, password]);
+    dispatch(loginRequestAction({ email, password }));
+  }, [email, password]);
 
   return (
     <FormWrapper onFinish={onSubmitForm}>
       <div>
-        <label htmlFor="user-id">아이디</label>
+        <label htmlFor="user-email">이메일</label>
         <br />
-        <Input name="user-id" value={id} onChange={onChangeId} required />
+        <Input
+          name="user-email"
+          type="email"
+          value={email}
+          onChange={onChangeEmail}
+          required
+        />
       </div>
       <div>
         <label htmlFor="user-password">비밀번호</label>
@@ -46,7 +52,7 @@ const LoginForm = () => {
         />
       </div>
       <ButtonWrapper style={{ marginTop: 10 }}>
-        <Button type="primary" htmlType="submit" loading={isLoggingIn}>
+        <Button type="primary" htmlType="submit" loading={logInLoading}>
           로그인
         </Button>
         <Link href="/signup" legacyBehavior>

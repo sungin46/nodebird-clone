@@ -15,7 +15,7 @@ import {
   SlickWrapper,
 } from "./styles";
 
-const ImagesZoom = ({ images, onClose }) => {
+function ImagesZoom({ images, onClose }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   return (
@@ -50,7 +50,7 @@ const ImagesZoom = ({ images, onClose }) => {
       </SlickWrapper>
     </Overlay>
   );
-};
+}
 
 ImagesZoom.propTypes = {
   images: PropTypes.arrayOf(PropTypes.object).isRequired,

@@ -68,8 +68,8 @@ const PostImages = ({ images }) => {
     );
   }
   return (
-    //현재 좌우 디자인 높이가 맞지 않는 이슈가 있음.
-    //flex를 사용해서 디자인을 적용시켜보려 했으나 아예 styled-components가 적용되지 않는 이슈 발생
+    // 현재 좌우 디자인 높이가 맞지 않는 이슈가 있음.
+    // flex를 사용해서 디자인을 적용시켜보려 했으나 아예 styled-components가 적용되지 않는 이슈 발생
     <div>
       <ImageWrapper>
         <ImageMoreTwo
@@ -90,7 +90,7 @@ const PostImages = ({ images }) => {
 };
 
 PostImages.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.object),
+  images: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default PostImages;

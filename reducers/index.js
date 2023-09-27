@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   // HYDRATE를 위해 index reducer 생성
   index: (state = {}, action) => {
     switch (action.type) {
-      case HYDRATE: //redux SSR을 위해서 사용
+      case HYDRATE: // redux SSR을 위해서 사용
         console.log("HYDRATE", action);
         return { ...state, ...action.HYDRATE };
 

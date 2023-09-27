@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import PropTypes from "prop-types";
 
-//해시태그 추출하기
+// 해시태그 추출하기
 const PostCardContent = ({ postData }) => (
   <div>
     {/* 정규표현식은 regexr.com 사이트에서 쉽게 테스트해볼 수 있다. */}
