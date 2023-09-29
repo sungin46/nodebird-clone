@@ -1,5 +1,5 @@
 import shortId from "shortid";
-import produce from "immer";
+import { produce } from "immer";
 
 export const initialState = {
   mainPosts: [

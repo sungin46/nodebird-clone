@@ -1,4 +1,4 @@
-import produce from "immer";
+import { produce } from "immer";
 
 export const initialState = {
   logInLoading: false, // 로그인 시도 중
