@@ -7,28 +7,39 @@ import { LOAD_POST_REQUEST } from "../reducers/post";
 
 const Home = () => {
   const dispatch = useDispatch();
+  const { me } = useSelector((state) => state.user);
+  const { mainPosts, hasMorePosts, loadPostsLoading } = useSelector(
+    (state) => state.post
+  );
+
   useEffect(() => {
     dispatch({
       type: LOAD_POST_REQUEST,
     });
   }, []);
 
+  // 인피니트 스크롤링
   useEffect(() => {
     const onScroll = () => {
-      console.log(
-        window.scrollY,
-        document.documentElement.clientHeight,
-        document.documentElement.scrollHeight
-      );
+      if (
+        window.scrollY + document.documentElement.clientHeight >
+        document.documentElement.scrollHeight - 300
+      ) {
+        // loadPostLoading을 이용해서 request를 한 번만 보낼 수 있게 설정한다.
+        if (hasMorePosts && !loadPostsLoading) {
+          dispatch({
+            type: LOAD_POST_REQUEST,
+          });
+        }
+      }
     };
     window.addEventListener("scroll", onScroll);
     return () => {
-      window.addEventListener("scroll", onScroll);
+      // 메모리에 쌓이기 때문에 이벤트리스너 삭제
+      window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [hasMorePosts, loadPostsLoading]);
 
-  const { me } = useSelector((state) => state.user);
-  const { mainPosts } = useSelector((state) => state.post);
   return (
     <AppLayout>
       {me && <PostForm />}

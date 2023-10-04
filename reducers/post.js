@@ -152,19 +152,19 @@ const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
       case LOAD_POST_REQUEST:
-        draft.loadPostLoading = true;
-        draft.loadPostDone = false;
-        draft.loadPostError = null;
+        draft.loadPostsLoading = true;
+        draft.loadPostsDone = false;
+        draft.loadPostsError = null;
         break;
       case LOAD_POST_SUCCESS:
-        draft.loadPostLoading = true;
-        draft.loadPostDone = true;
+        draft.loadPostsLoading = false;
+        draft.loadPostsDone = true;
         draft.mainPosts = action.data.concat(draft.mainPosts);
-        draft.hasMorePost = draft.mainPosts.length < 50;
+        draft.hasMorePosts = draft.mainPosts.length < 50;
         break;
       case LOAD_POST_FAILURE:
-        draft.loadPostLoading = false;
-        draft.loadPostError = action.error;
+        draft.loadPostsLoading = false;
+        draft.loadPostsError = action.error;
         break;
       case ADD_POST_REQUEST:
         draft.addPostLoading = true;
@@ -172,7 +172,7 @@ const reducer = (state = initialState, action) =>
         draft.addPostError = null;
         break;
       case ADD_POST_SUCCESS:
-        draft.addPostLoading = true;
+        draft.addPostLoading = false;
         draft.addPostDone = true;
         // dummyPost를 앞에 선언해야 최신글이 위에 올라온다.
         draft.mainPosts.unshift(dummyPost(action.data));

@@ -1,5 +1,12 @@
 import axios from "axios";
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
+import {
+  all,
+  delay,
+  fork,
+  put,
+  takeLatest,
+  throttle,
+} from "redux-saga/effects";
 import shortId from "shortid";
 import {
   ADD_COMMENT_FAILURE,
@@ -118,7 +125,7 @@ function* addComment(action) {
 // 요청은 취소하지 못하고 응답을 한 번만 한다.
 // 이것을 방지하기 위해 throttle같은 몇 초 이내에 한 번만 요청을 보내는 이펙트도 등장했다.
 function* watchLoadPosts() {
-  yield takeLatest(LOAD_POST_REQUEST, loadPosts);
+  yield throttle(5000, LOAD_POST_REQUEST, loadPosts);
 }
 function* watchAddPost() {
   yield takeLatest(ADD_POST_REQUEST, addPost);
