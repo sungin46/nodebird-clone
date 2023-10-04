@@ -8,11 +8,34 @@ import {
   ADD_POST_FAILURE,
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
+  generateDummyPost,
 } from "../reducers/post";
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from "../reducers/user";
+
+function loadPostsAPI(data) {
+  return axios.get("/api/posts", data);
+}
+
+function* loadPosts() {
+  try {
+    yield delay(1000);
+    yield put({
+      type: LOAD_POST_SUCCESS,
+      data: generateDummyPost(10),
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_POST_FAILURE,
+      data: err.response.data,
+    });
+  }
+}
 
 function addPostAPI(data) {
   return axios.post("/api/post", data);
@@ -94,6 +117,9 @@ function* addComment(action) {
 // 프론트에서 요청을 두 번 동시에 보냈다면 백엔드에서 같은 데이터가 쌓이진 않았는지 체크해야한다.
 // 요청은 취소하지 못하고 응답을 한 번만 한다.
 // 이것을 방지하기 위해 throttle같은 몇 초 이내에 한 번만 요청을 보내는 이펙트도 등장했다.
+function* watchLoadPosts() {
+  yield takeLatest(LOAD_POST_REQUEST, loadPosts);
+}
 function* watchAddPost() {
   yield takeLatest(ADD_POST_REQUEST, addPost);
 }
@@ -104,5 +130,10 @@ function* watchAddComment() {
   yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
 export default function* postSaga() {
-  yield all([fork(watchAddPost), fork(watchAddComment), fork(watchRemovePost)]);
+  yield all([
+    fork(watchAddPost),
+    fork(watchLoadPosts),
+    fork(watchAddComment),
+    fork(watchRemovePost),
+  ]);
 }
