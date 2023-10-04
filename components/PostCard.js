@@ -15,6 +15,7 @@ import PostImages from "./PostImages";
 import CommentForm from "./CommentForm";
 import PostCardContent from "./PostCardContent";
 import { REMOVE_POST_REQUEST } from "../reducers/post";
+import FollowButton from "./FollowButton";
 
 const PostCard = ({ post }) => {
   // 옵셔널 체이닝 - JS2020버전에서 추가되었으며 중첩 객체에 빠르게 접근할 수 있다.
@@ -78,6 +79,7 @@ const PostCard = ({ post }) => {
             <EllipsisOutlined />
           </Popover>,
         ]}
+        extra={id && <FollowButton post={post} />}
       >
         <Card.Meta
           avatar={post.User.nickname[0]}
