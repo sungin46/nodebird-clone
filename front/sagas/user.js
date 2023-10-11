@@ -1,5 +1,5 @@
 import axios from "axios";
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
 import {
   FOLLOW_FAILURE,
   FOLLOW_REQUEST,
@@ -97,16 +97,16 @@ function* logOut(result) {
   }
 }
 
-function signUpAPI() {
-  return axios.post("/api/signup");
+function signUpAPI(data) {
+  return axios.post("http://localhost:3005/user", data);
 }
 
-function* signUp(result) {
+function* signUp(action) {
   try {
-    yield delay(1000); // 아직은 서버가 없으니 비동기적인 효과를 나타내보기 위해 딜레이 사용.
+    const result = yield call(signUpAPI, action.data);
+    console.log(result);
     yield put({
       type: SIGN_UP_SUCCESS,
-      data: result.data,
     });
   } catch (err) {
     yield put({

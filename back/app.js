@@ -1,6 +1,8 @@
 // app.js라는 것을 실행할 때 node runtime이 이 코드를 실행해서 http가 서버 역할을 해준다.
 const express = require("express");
+const cors = require("cors");
 const postRouter = require("./routes/post");
+const userRouter = require("./routes/user");
 const db = require("./models");
 
 const app = express();
@@ -11,6 +13,9 @@ db.sequelize
   })
   .catch(console.error);
 
+app.use(cors({ origin: "*", credentials: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // 보통 네이밍을 할 때 REST API 방식으로 많이 짓는다.
 // app.get(가져오기), post(생성하기), put(전체수정), delete(제거), patch(부분수정)
 // options(찔러보기?), head(헤더만 가져오기(헤더/바디)) 정도를 많이 사용한다.
@@ -34,6 +39,7 @@ app.get("/posts", (req, res) => {
 
 // post 라우터 분리
 app.use("/post", postRouter);
+app.use("/user", userRouter);
 
 app.listen(3005, () => {
   console.log("서버 실행 중!!!!");
