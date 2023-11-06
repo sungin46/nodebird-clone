@@ -1,9 +1,53 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const { User } = require("../models");
+const passport = require("passport");
+const { User, Post } = require("../models");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+// POST /user/login
+// 원래는 passport.autenticate를 사용하면서 req, res, next를 사용할 수 없었지만
+// 미들웨어 확장으로 req, res, next를 사용할 수 있게 되었다.
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      console.error(err);
+      return next(err);
+    }
+    if (info) {
+      return res.status(401).send(info.reason);
+    }
+    return req.login(user, async (loginErr) => {
+      if (loginErr) {
+        console.err(loginErr);
+        return next(loginErr);
+      }
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: user.id },
+        attributes: {
+          exclude: ["password"],
+        },
+        include: [
+          {
+            // models에 Post가 hasMany로 선언되어 model: Post가 복수형으로 변경되어 me.Posts가 된다.
+            model: Post,
+          },
+          {
+            model: User,
+            as: "Followings",
+          },
+          {
+            model: User,
+            as: "Followers",
+          },
+        ],
+      });
+      return res.status(200).json(fullUserWithoutPassword);
+    });
+  })(req, res, next);
+});
+
+// POST /user/
+router.post("/", async (req, res, next) => {
   try {
     const exUser = await User.findOne({
       where: {
@@ -24,6 +68,14 @@ router.post("/", async (req, res) => {
     console.error(error);
     next(error); //500
   }
+});
+
+router.post("/logout", (req, res) => {
+  req.logout(() => {
+    res.redirect("/");
+  });
+  req.session.destroy();
+  res.send("ok");
 });
 
 module.exports = router;

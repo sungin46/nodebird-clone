@@ -51,24 +51,24 @@ export const UNFOLLOW_FAILURE = "UNFOLLOW_FAILURE";
 export const ADD_POST_TO_ME = "ADD_POST_TO_ME";
 export const REMOVE_POST_OF_ME = "REMOVE_POST_OF_ME";
 
-const dummyUser = (data) => ({
-  ...data,
-  nickname: "Sungin",
-  id: 1,
-  // 현재 포스트와 유저의 리듀서가 달라 글 연동이 안된다.
-  // User reducer의 상태를 바꾸고 싶다면 action을 만들면 된다.
-  Posts: [{ id: 1 }],
-  Followings: [
-    { nickname: "dbaudtjs12" },
-    { nickname: "NB-RANGER" },
-    { nickname: "IMFox" },
-  ],
-  Followers: [
-    { nickname: "dbaudtjs12" },
-    { nickname: "NB-RANGER" },
-    { nickname: "IMFox" },
-  ],
-});
+// const dummyUser = (data) => ({
+//   ...data,
+//   nickname: "Sungin",
+//   id: 1,
+//   // 현재 포스트와 유저의 리듀서가 달라 글 연동이 안된다.
+//   // User reducer의 상태를 바꾸고 싶다면 action을 만들면 된다.
+//   Posts: [{ id: 1 }],
+//   Followings: [
+//     { nickname: "dbaudtjs12" },
+//     { nickname: "NB-RANGER" },
+//     { nickname: "IMFox" },
+//   ],
+//   Followers: [
+//     { nickname: "dbaudtjs12" },
+//     { nickname: "NB-RANGER" },
+//     { nickname: "IMFox" },
+//   ],
+// });
 
 export const loginRequestAction = (data) => ({
   type: LOG_IN_REQUEST,
@@ -120,7 +120,7 @@ const reducer = (state = initialState, action) =>
       case LOG_IN_SUCCESS:
         draft.logInLoading = false;
         draft.logInDone = true;
-        draft.me = dummyUser(action.user);
+        draft.me = action.data;
         break;
       case LOG_IN_FAILURE:
         draft.logInLoading = false;

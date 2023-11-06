@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { Avatar, Button, Card } from "antd";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequestAction } from "../reducers/user";
 
@@ -45,10 +44,6 @@ const UserProfile = () => {
       </Button>
     </Card>
   );
-};
-
-UserProfile.propTypes = {
-  setIsLoggedIn: PropTypes.func.isRequired,
 };
 
 export default UserProfile;

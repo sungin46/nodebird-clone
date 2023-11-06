@@ -57,17 +57,17 @@ function* unfollow(action) {
 }
 
 function logInAPI(data) {
-  return axios.post("/api/login", data);
+  return axios.post("/user/login", data);
 }
 
 function* logIn(action) {
   try {
-    // const result = yield call(logInAPI, action.data); //이 경우에는 fork를 사용하면 안된다.
+    const result = yield call(logInAPI, action.data); // 이 경우에는 fork를 사용하면 안된다.
     // 요청을 보내놓고 응답을 받지 않은 상태이기 때문이다.
-    yield delay(1000);
+
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -78,16 +78,14 @@ function* logIn(action) {
 }
 
 function logOutAPI() {
-  return axios.post("/api/logout");
+  return axios.post("/user/logout");
 }
 
-function* logOut(result) {
+function* logOut() {
   try {
-    // const result = yield call(logOutAPI); //이 경우에는 fork를 사용하면 안된다. 요청을 보내놓고 응답을 받지 않은 상태이기 때문이다.
-    yield delay(1000); // 아직은 서버가 없으니 비동기적인 효과를 나타내보기 위해 딜레이 사용.
+    yield call(logOutAPI);
     yield put({
       type: LOG_OUT_SUCCESS,
-      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -98,7 +96,7 @@ function* logOut(result) {
 }
 
 function signUpAPI(data) {
-  return axios.post("http://localhost:3005/user", data);
+  return axios.post("/user", data);
 }
 
 function* signUp(action) {
