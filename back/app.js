@@ -44,10 +44,6 @@ app.get("/", (req, res) => {
   res.send("Hello Express");
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello API");
-});
-
 app.get("/posts", (req, res) => {
   res.json([
     { id: 1, content: "hello" },
@@ -59,6 +55,9 @@ app.get("/posts", (req, res) => {
 // post 라우터 분리
 app.use("/post", postRouter);
 app.use("/user", userRouter);
+
+// 기본적으로도 마지막 부분에서 에러처리가 되지만 커스터마이징을 하고싶다면 따로 에러처리 미들웨어를 선언해서 커스터마이징이 가능하다.
+// app.use((err, req, res, next) => {});
 
 app.listen(3005, () => {
   console.log("서버 실행 중!!!!");

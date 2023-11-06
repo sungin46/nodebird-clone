@@ -2,12 +2,13 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const { User, Post } = require("../models");
+const { isNotLoggedIn, isLoggedIn } = require("./middlewares");
 const router = express.Router();
 
 // POST /user/login
 // 원래는 passport.autenticate를 사용하면서 req, res, next를 사용할 수 없었지만
 // 미들웨어 확장으로 req, res, next를 사용할 수 있게 되었다.
-router.post("/login", (req, res, next) => {
+router.post("/login", isNotLoggedIn, (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       console.error(err);
@@ -47,7 +48,7 @@ router.post("/login", (req, res, next) => {
 });
 
 // POST /user/
-router.post("/", async (req, res, next) => {
+router.post("/", isNotLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({
       where: {
@@ -70,7 +71,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", isLoggedIn, (req, res) => {
   req.logout(() => {
     res.redirect("/");
   });
