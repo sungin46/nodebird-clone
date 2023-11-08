@@ -1,9 +1,9 @@
 import { produce } from "immer";
 
 export const initialState = {
-  loadUserLoading: false, // 유저 정보 가져오기 시도 중
-  loadUserDone: false,
-  loadUserError: null,
+  loadMyInfoLoading: false, // 유저 정보 가져오기 시도 중
+  loadMyInfoDone: false,
+  loadMyInfoError: null,
   followLoading: false, // 팔로우 시도 중
   followDone: false,
   followError: null,
@@ -71,18 +71,18 @@ const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
       case LOAD_MY_INFO_REQUEST:
-        draft.loadUserLoading = true;
-        draft.loadUserError = null;
-        draft.loadUserDone = false;
+        draft.loadMyInfoLoading = true;
+        draft.loadMyInfoError = null;
+        draft.loadMyInfoDone = false;
         break;
       case LOAD_MY_INFO_SUCCESS:
-        draft.loadUserLoading = false;
+        draft.loadMyInfoLoading = false;
         draft.me = action.data;
-        draft.loadUserDone = true;
+        draft.loadMyInfoDone = true;
         break;
       case LOAD_MY_INFO_FAILURE:
-        draft.loadUserLoading = false;
-        draft.loadUserError = action.error;
+        draft.loadMyInfoLoading = false;
+        draft.loadMyInfoError = action.error;
         break;
       case FOLLOW_REQUEST:
         draft.folowLoading = true;

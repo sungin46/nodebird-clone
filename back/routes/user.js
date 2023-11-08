@@ -5,7 +5,7 @@ const { User, Post } = require("../models");
 const { isNotLoggedIn, isLoggedIn } = require("./middlewares");
 const router = express.Router();
 
-router.get("/", async (err, req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     if (req.user) {
       const fullUserWithoutPassword = await User.findOne({
