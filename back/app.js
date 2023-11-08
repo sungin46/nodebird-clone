@@ -5,8 +5,10 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const dotenv = require("dotenv");
+const morgan = require("morgan");
 
 const postRouter = require("./routes/post");
+const postsRouter = require("./routes/posts");
 const userRouter = require("./routes/user");
 const db = require("./models");
 const passportConfig = require("./passport");
@@ -21,6 +23,8 @@ db.sequelize
   .catch(console.error);
 
 passportConfig();
+
+app.use(morgan("dev"));
 
 // cookie를 같이 전달하고 싶을 때는 credentials를 true로 바꿔줘야한다.
 // 보안이 더 강력해졌기 때문에 origin에 정확한 주소를 적어줘야 한다.
@@ -46,16 +50,9 @@ app.get("/", (req, res) => {
   res.send("Hello Express");
 });
 
-app.get("/posts", (req, res) => {
-  res.json([
-    { id: 1, content: "hello" },
-    { id: 2, content: "hello2" },
-    { id: 3, content: "hello3" },
-  ]);
-});
-
-// post 라우터 분리
+// 라우터 분리
 app.use("/post", postRouter);
+app.use("/posts", postsRouter);
 app.use("/user", userRouter);
 
 // 기본적으로도 마지막 부분에서 에러처리가 되지만 커스터마이징을 하고싶다면 따로 에러처리 미들웨어를 선언해서 커스터마이징이 가능하다.
