@@ -31,6 +31,11 @@ router.get("/", async (req, res, next) => {
             },
           ],
         },
+        {
+          model: User,
+          as: "Likers",
+          attributes: ["id"],
+        },
       ],
     });
     console.log(posts);

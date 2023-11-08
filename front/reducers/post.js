@@ -1,10 +1,14 @@
-import shortId from "shortid";
 import { produce } from "immer";
-import faker from "faker";
 
 export const initialState = {
   imagePaths: [],
   hasMorePost: true,
+  likePostsLoading: false,
+  likePostsDone: false,
+  likePostsError: null,
+  unlikePostsLoading: false,
+  unlikePostsDone: false,
+  unlikePostsError: null,
   loadPostsLoading: false,
   loadPostsDone: false,
   loadPostsError: null,
@@ -17,83 +21,16 @@ export const initialState = {
   addCommentLoading: false,
   addCommentDone: false,
   addCommentError: null,
-  mainPosts: [
-    // {
-    //   id: 1,
-    //   // 대문자로 사용하는 이유는 DB의 시퀄라이즈 때문
-    //   // 어떤 정보와 다른 정보가 관계가 있다면 합쳐주는데, 합쳐진 것이 대문자로 나온다.
-    //   // 소문자로 쓴 것은 게시글 자체의 속성이고
-    //   // 대문자로 쓴 것은 다른 정보들과 합쳐서 준다.
-    //   User: {
-    //     id: 1,
-    //     nickname: "홍성인",
-    //   },
-    //   content: "첫 번째 게시글 #해시태그 #IVE #아이브",
-    //   Images: [
-    //     {
-    //       id: shortId.generate(),
-    //       src: "https://i.ytimg.com/vi/A7eDNlAWHZk/maxresdefault.jpg",
-    //     },
-    //     {
-    //       id: shortId.generate(),
-    //       src: "https://i.ytimg.com/vi/9hhYHk7GVpI/maxresdefault.jpg",
-    //     },
-    //     {
-    //       id: shortId.generate(),
-    //       src: "https://img.segye.com/content/image/2023/04/18/20230418526190.jpg",
-    //     },
-    //   ],
-    //   Comments: [
-    //     {
-    //       id: shortId.generate(),
-    //       User: {
-    //         id: shortId.generate(),
-    //         nickname: "envy",
-    //       },
-    //       content: "Next.js와 redux!",
-    //     },
-    //     {
-    //       id: shortId.generate(),
-    //       User: {
-    //         id: shortId.generate(),
-    //         nickname: "envy",
-    //       },
-    //       content: "배움은 즐거워!",
-    //     },
-    //   ],
-    // },
-  ],
+  mainPosts: [],
 };
 
-export const generateDummyPost = (number) =>
-  Array(number)
-    .fill()
-    .map(() => ({
-      id: shortId.generate(),
-      User: {
-        id: shortId.generate(),
-        nickname: faker.name.findName(),
-      },
-      content: faker.lorem.paragraph(),
-      Images: [
-        {
-          src: faker.image.image(),
-        },
-      ],
-      Comments: [
-        {
-          User: {
-            id: shortId.generate(),
-            nickname: faker.name.findName(),
-          },
-          content: faker.lorem.sentence(),
-        },
-      ],
-    }));
+export const UNLIKE_POST_REQUEST = "UNLIKE_POST_REQUEST";
+export const UNLIKE_POST_SUCCESS = "UNLIKE_POST_SUCCESS";
+export const UNLIKE_POST_FAILURE = "UNLIKE_POST_FAILURE";
 
-// 이 부분 때문에 hydration 오류가 발생했었다.
-// 더미포스트가 하나 미리 만들어져서 빈 포스트에 10개 포스트를 만들려했지만 이미 만들어진 포스트가 하나 존재했기 때문.
-// initialState.mainPosts = initialState.mainPosts.concat(generateDummyPost());
+export const LIKE_POST_REQUEST = "LIKE_POST_REQUEST";
+export const LIKE_POST_SUCCESS = "LIKE_POST_SUCCESS";
+export const LIKE_POST_FAILURE = "LIKE_POST_FAILURE";
 
 // 액션 이름을 상수로 뺀 이유는 액션에서도 사용 가능하고 reducer 내에서도 사용 가능하기 때문이다.
 export const LOAD_POST_REQUEST = "LOAD_POST_REQUEST";
@@ -128,6 +65,38 @@ export const addComment = (data) => ({
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
+      case LIKE_POST_REQUEST:
+        draft.likePostLoading = true;
+        draft.likePostDone = false;
+        draft.likePostError = null;
+        break;
+      case LIKE_POST_SUCCESS: {
+        const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+        post.Likers.push({ id: action.data.UserId });
+        draft.likePostLoading = false;
+        draft.likePostDone = true;
+        break;
+      }
+      case LIKE_POST_FAILURE:
+        draft.likePostLoading = false;
+        draft.likePostError = action.error;
+        break;
+      case UNLIKE_POST_REQUEST:
+        draft.unlikePostLoading = true;
+        draft.unlikePostDone = false;
+        draft.unlikePostError = null;
+        break;
+      case UNLIKE_POST_SUCCESS: {
+        const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+        post.Likers = post.Likers.filter((v) => v.id !== action.data.UserId);
+        draft.unlikePostLoading = false;
+        draft.unlikePostDone = true;
+        break;
+      }
+      case UNLIKE_POST_FAILURE:
+        draft.unlikePostLoading = false;
+        draft.unlikePostError = action.error;
+        break;
       case LOAD_POST_REQUEST:
         draft.loadPostsLoading = true;
         draft.loadPostsDone = false;

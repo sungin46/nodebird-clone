@@ -15,32 +15,78 @@ import {
   ADD_POST_FAILURE,
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
+  LIKE_POST_FAILURE,
+  LIKE_POST_REQUEST,
+  LIKE_POST_SUCCESS,
   LOAD_POST_FAILURE,
   LOAD_POST_REQUEST,
   LOAD_POST_SUCCESS,
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
-  generateDummyPost,
+  UNLIKE_POST_FAILURE,
+  UNLIKE_POST_REQUEST,
+  UNLIKE_POST_SUCCESS,
 } from "../reducers/post";
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from "../reducers/user";
 
-function loadPostsAPI(data) {
-  return axios.get("/api/posts", data);
+function likePostAPI(data) {
+  return axios.patch(`/post/${data}/like`);
 }
 
-function* loadPosts() {
+function* likePost(action) {
   try {
-    yield delay(1000);
+    const result = yield call(likePostAPI, action.data);
+    yield put({
+      type: LIKE_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LIKE_POST_FAILURE,
+      data: err.response.data,
+    });
+    alert(err);
+  }
+}
+
+function unlikePostAPI(data) {
+  return axios.delete(`/post/${data}/like`);
+}
+
+function* unlikePost(action) {
+  try {
+    const result = yield call(unlikePostAPI, action.data);
+    yield put({
+      type: UNLIKE_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: UNLIKE_POST_FAILURE,
+      data: err.response.data,
+    });
+    alert(err);
+  }
+}
+
+function loadPostsAPI(data) {
+  return axios.get("/posts", data);
+}
+
+function* loadPosts(action) {
+  try {
+    const result = yield call(loadPostsAPI, action.data);
     yield put({
       type: LOAD_POST_SUCCESS,
-      data: generateDummyPost(10),
+      data: result.data,
     });
   } catch (err) {
     yield put({
       type: LOAD_POST_FAILURE,
       data: err.response.data,
     });
+    alert(err);
   }
 }
 
@@ -99,12 +145,12 @@ function* addComment(action) {
   try {
     const result = yield call(addCommentAPI, action.data); // 이 경우에는 fork를 사용하면 안된다.
     // 요청을 보내놓고 응답을 받지 않은 상태이기 때문이다.
-    yield delay(1000);
     yield put({
       type: ADD_COMMENT_SUCCESS,
       data: result.data,
     });
   } catch (err) {
+    console.error(err);
     yield put({
       type: ADD_COMMENT_FAILURE,
       data: err.response.data,
@@ -117,6 +163,12 @@ function* addComment(action) {
 // 프론트에서 요청을 두 번 동시에 보냈다면 백엔드에서 같은 데이터가 쌓이진 않았는지 체크해야한다.
 // 요청은 취소하지 못하고 응답을 한 번만 한다.
 // 이것을 방지하기 위해 throttle같은 몇 초 이내에 한 번만 요청을 보내는 이펙트도 등장했다.
+function* watchLikePost() {
+  yield takeLatest(LIKE_POST_REQUEST, likePost);
+}
+function* watchUnlikePost() {
+  yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
+}
 function* watchLoadPosts() {
   yield throttle(5000, LOAD_POST_REQUEST, loadPosts);
 }
@@ -131,6 +183,8 @@ function* watchAddComment() {
 }
 export default function* postSaga() {
   yield all([
+    fork(watchLikePost),
+    fork(watchUnlikePost),
     fork(watchAddPost),
     fork(watchLoadPosts),
     fork(watchAddComment),
