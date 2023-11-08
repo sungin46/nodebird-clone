@@ -1,13 +1,13 @@
 import axios from "axios";
 import {
   all,
+  call,
   delay,
   fork,
   put,
   takeLatest,
   throttle,
 } from "redux-saga/effects";
-import shortId from "shortid";
 import {
   ADD_COMMENT_FAILURE,
   ADD_COMMENT_REQUEST,
@@ -45,27 +45,20 @@ function* loadPosts() {
 }
 
 function addPostAPI(data) {
-  return axios.post("/api/post", data);
+  return axios.post("/post", { content: data });
 }
 
 function* addPost(action) {
   try {
-    // const result = yield call(addPostAPI, action.data); //이 경우에는 fork를 사용하면 안된다.
-    // 요청을 보내놓고 응답을 받지 않은 상태이기 때문이다.
-    // post reducer에서는 post reducer의 action으로
-    yield delay(1000);
-    const id = shortId.generate();
+    const result = yield call(addPostAPI, action.data); // 이 경우에는 fork를 사용하면 안된다.
     yield put({
       type: ADD_POST_SUCCESS,
-      data: {
-        id,
-        content: action.data,
-      },
+      data: action.data,
     });
     // user reducer에서는 user reducer의 액션으로
     yield put({
       type: ADD_POST_TO_ME,
-      data: id,
+      data: result.data.id,
     });
   } catch (err) {
     yield put({
@@ -99,17 +92,17 @@ function* removePost(action) {
 }
 
 function addCommentAPI(data) {
-  return axios.post(`/api/post/${data.postId}/comment`, data);
+  return axios.post(`/post/${data.postId}/comment`, data);
 }
 
 function* addComment(action) {
   try {
-    // const result = yield call(addPostAPI, action.data); //이 경우에는 fork를 사용하면 안된다.
+    const result = yield call(addCommentAPI, action.data); // 이 경우에는 fork를 사용하면 안된다.
     // 요청을 보내놓고 응답을 받지 않은 상태이기 때문이다.
     yield delay(1000);
     yield put({
       type: ADD_COMMENT_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({

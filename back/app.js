@@ -6,8 +6,8 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const dotenv = require("dotenv");
 
-const postRouter = require("./routes/post");
-const userRouter = require("./routes/user");
+const postRouter = require("./routes/post");
+const userRouter = require("./routes/user");
 const db = require("./models");
 const passportConfig = require("./passport");
 
@@ -22,7 +22,9 @@ db.sequelize
 
 passportConfig();
 
-app.use(cors({ origin: "*", credentials: false }));
+// cookie를 같이 전달하고 싶을 때는 credentials를 true로 바꿔줘야한다.
+// 보안이 더 강력해졌기 때문에 origin에 정확한 주소를 적어줘야 한다.
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));

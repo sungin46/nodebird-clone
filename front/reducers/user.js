@@ -1,7 +1,10 @@
 import { produce } from "immer";
 
 export const initialState = {
-  followLoading: false, // 언팔로우 시도 중
+  loadUserLoading: false, // 유저 정보 가져오기 시도 중
+  loadUserDone: false,
+  loadUserError: null,
+  followLoading: false, // 팔로우 시도 중
   followDone: false,
   followError: null,
   unfollowLoading: false, // 언팔로우 시도 중
@@ -23,6 +26,10 @@ export const initialState = {
   signUpData: {},
   loginData: {},
 };
+
+export const LOAD_MY_INFO_REQUEST = "LOAD_MY_INFO_REQUEST";
+export const LOAD_MY_INFO_SUCCESS = "LOAD_MY_INFO_SUCCESS";
+export const LOAD_MY_INFO_FAILURE = "LOAD_MY_INFO_FAILURE";
 
 export const LOG_IN_REQUEST = "LOG_IN_REQUEST";
 export const LOG_IN_SUCCESS = "LOG_IN_SUCCESS";
@@ -51,25 +58,6 @@ export const UNFOLLOW_FAILURE = "UNFOLLOW_FAILURE";
 export const ADD_POST_TO_ME = "ADD_POST_TO_ME";
 export const REMOVE_POST_OF_ME = "REMOVE_POST_OF_ME";
 
-// const dummyUser = (data) => ({
-//   ...data,
-//   nickname: "Sungin",
-//   id: 1,
-//   // 현재 포스트와 유저의 리듀서가 달라 글 연동이 안된다.
-//   // User reducer의 상태를 바꾸고 싶다면 action을 만들면 된다.
-//   Posts: [{ id: 1 }],
-//   Followings: [
-//     { nickname: "dbaudtjs12" },
-//     { nickname: "NB-RANGER" },
-//     { nickname: "IMFox" },
-//   ],
-//   Followers: [
-//     { nickname: "dbaudtjs12" },
-//     { nickname: "NB-RANGER" },
-//     { nickname: "IMFox" },
-//   ],
-// });
-
 export const loginRequestAction = (data) => ({
   type: LOG_IN_REQUEST,
   data,
@@ -82,10 +70,24 @@ export const logoutRequestAction = () => ({
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
+      case LOAD_MY_INFO_REQUEST:
+        draft.loadUserLoading = true;
+        draft.loadUserError = null;
+        draft.loadUserDone = false;
+        break;
+      case LOAD_MY_INFO_SUCCESS:
+        draft.loadUserLoading = false;
+        draft.me = action.data;
+        draft.loadUserDone = true;
+        break;
+      case LOAD_MY_INFO_FAILURE:
+        draft.loadUserLoading = false;
+        draft.loadUserError = action.error;
+        break;
       case FOLLOW_REQUEST:
         draft.folowLoading = true;
         draft.folowError = null;
-        draft.logInDone = false;
+        draft.followDone = false;
         break;
       case FOLLOW_SUCCESS:
         draft.folowLoading = false;

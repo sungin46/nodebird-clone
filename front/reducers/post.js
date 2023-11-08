@@ -122,29 +122,6 @@ export const addComment = (data) => ({
   data,
 });
 
-const dummyPost = (data) => ({
-  // data에 id와 content가 담기게 되어 두가지 데이터를 다시 바꿔준다.
-  id: data.id,
-  content: data.content,
-  User: {
-    id: 1,
-    nickname: "홍성인",
-  },
-  Images: [],
-  Comments: [],
-});
-
-const dummyCommnets = (data) => ({
-  id: shortId.generate(),
-  content: data,
-  User: {
-    id: 1,
-    nickname: "홍성인",
-  },
-  Images: [],
-  Comments: [],
-});
-
 // reducer - 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수 (불변성을 지키면서)
 // immer 도입
 // draft는 불변성 상관없이 바꿔도 된다. 그러면 immer가 알아서 state를 불변성을 지켜서 다음 상태로 만들어준다.
@@ -175,7 +152,7 @@ const reducer = (state = initialState, action) =>
         draft.addPostLoading = false;
         draft.addPostDone = true;
         // dummyPost를 앞에 선언해야 최신글이 위에 올라온다.
-        draft.mainPosts.unshift(dummyPost(action.data));
+        draft.mainPosts.unshift(action.data);
         break;
       case ADD_POST_FAILURE:
         draft.addPostLoading = false;
@@ -206,8 +183,8 @@ const reducer = (state = initialState, action) =>
         // 바뀌는 것만 새로운 객체로 만들고 원래 것은 참조만 해야한다.
         // 그래야 메모리를 절약할 수 있다.
         // 이 부분때문에 immer를 사용했다. 확실하게 코드 양이 줄었다.
-        const post = draft.mainPosts.find((v) => v.id === action.data.postId);
-        post.Comments.unshift(dummyCommnets(action.data.content));
+        const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+        post.Comments.unshift(action.data);
         draft.addCommentLoading = false;
         draft.addCommentDone = true;
         break;

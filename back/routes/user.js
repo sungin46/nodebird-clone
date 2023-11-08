@@ -5,6 +5,42 @@ const { User, Post } = require("../models");
 const { isNotLoggedIn, isLoggedIn } = require("./middlewares");
 const router = express.Router();
 
+router.get("/", async (err, req, res, next) => {
+  try {
+    if (req.user) {
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: req.user.id },
+        attributes: {
+          exclude: ["password"],
+        },
+        include: [
+          {
+            // models에 Post가 hasMany로 선언되어 model: Post가 복수형으로 변경되어 me.Posts가 된다.
+            model: Post,
+            attributes: ["id"],
+          },
+          {
+            model: User,
+            as: "Followings",
+            attributes: ["id"],
+          },
+          {
+            model: User,
+            as: "Followers",
+            attributes: ["id"],
+          },
+        ],
+      });
+      res.status(200).json(fullUserWithoutPassword);
+    } else {
+      res.status(200).json(null);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 // POST /user/login
 // 원래는 passport.autenticate를 사용하면서 req, res, next를 사용할 수 없었지만
 // 미들웨어 확장으로 req, res, next를 사용할 수 있게 되었다.
@@ -31,14 +67,17 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
           {
             // models에 Post가 hasMany로 선언되어 model: Post가 복수형으로 변경되어 me.Posts가 된다.
             model: Post,
+            attributes: ["id"],
           },
           {
             model: User,
             as: "Followings",
+            attributes: ["id"],
           },
           {
             model: User,
             as: "Followers",
+            attributes: ["id"],
           },
         ],
       });
