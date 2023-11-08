@@ -136,7 +136,9 @@ const reducer = (state = initialState, action) =>
         draft.removePostLoading = false;
         draft.removePostDone = true;
         // filter 함수를 사용해 지정한 id 이외의 게시글만 남기게 된다.
-        draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data);
+        draft.mainPosts = draft.mainPosts.filter(
+          (v) => v.id !== action.data.PostId
+        );
         break;
       case REMOVE_POST_FAILURE:
         draft.removePostLoading = false;
