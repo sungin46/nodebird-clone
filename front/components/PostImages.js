@@ -40,8 +40,8 @@ const PostImages = ({ images }) => {
       <>
         <img
           role="presentation" // 시각장애인용으로, 스크린 리더에서 클릭할 순 있지만 굳이 클릭하지 않아도 됨을 알림
-          src={images[0].src}
-          alt={images[0].src}
+          src={`http://localhost:3005/${images[0].src}`}
+          alt={`http://localhost:3005/${images[0].src}`}
           onClick={onZoom}
         />
         {showImagesZoom && <ImagesZoom images={images} onClose={onClose} />}
@@ -53,14 +53,14 @@ const PostImages = ({ images }) => {
       <>
         <ImageMoreTwo
           role="presentation"
-          src={images[0].src}
-          alt={images[0].src}
+          src={`http://localhost:3005/${images[0].src}`}
+          alt={`http://localhost:3005/${images[0].src}`}
           onClick={onZoom}
         />
         <ImageMoreTwo
           role="presentation"
-          src={images[1].src}
-          alt={images[1].src}
+          src={`http://localhost:3005/${images[1].src}`}
+          alt={`http://localhost:3005/${images[1].src}`}
           onClick={onZoom}
         />
         {showImagesZoom && <ImagesZoom images={images} onClose={onClose} />}
@@ -74,8 +74,8 @@ const PostImages = ({ images }) => {
       <ImageWrapper>
         <ImageMoreTwo
           role="presentation"
-          src={images[0].src}
-          alt={images[0].src}
+          src={`http://localhost:3005/${images[0].src}`}
+          alt={`http://localhost:3005/${images[0].src}`}
           onClick={onZoom}
         />
         <ButtonWrapper role="presentation" onClick={onZoom}>

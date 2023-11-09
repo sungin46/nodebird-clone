@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
+const path = require("path");
 
 const postRouter = require("./routes/post");
 const postsRouter = require("./routes/posts");
@@ -29,6 +30,8 @@ app.use(morgan("dev"));
 // cookie를 같이 전달하고 싶을 때는 credentials를 true로 바꿔줘야한다.
 // 보안이 더 강력해졌기 때문에 origin에 정확한 주소를 적어줘야 한다.
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// 운영 체제마다 path가 / 일수도 있고 \ 일수도 있기 때문에 path.join을 써준다.
+app.use("/", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));

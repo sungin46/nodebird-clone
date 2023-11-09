@@ -1,19 +1,62 @@
 // node에서는 import, export를 사용하지 않고 require, module.exports를 사용한다.
 // node는 웹 팩을 사용하지 않기 때문에 그렇다.
 const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 const { Post, Comment, Image, User } = require("../models");
 const { isLoggedIn } = require("./middlewares");
 
 const router = express.Router();
 
+try {
+  fs.accessSync("uploads");
+} catch (error) {
+  console.log("uploads 폴더가 없으므로 생성합니다.");
+  fs.mkdirSync("uploads");
+}
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, done) {
+      done(null, "uploads");
+    },
+    filename(req, file, done) {
+      // 파일명.png
+      const ext = path.extname(file.originalname); // 확장자 추출(.png)
+      const basename = path.basename(file.originalname, ext); // 파일명
+      done(null, basename + "_" + new Date().getTime() + ext); // 파일명173461341.png
+    },
+  }),
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20mb
+});
+
 // POST /post
-router.post("/", isLoggedIn, async (req, res, next) => {
+router.post("/", isLoggedIn, upload.none(), async (req, res, next) => {
   try {
     const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id,
     });
+    if (req.body.image) {
+      // 이미지를 여러개 올리면 image: [img1.png, img2.png]
+      if (Array.isArray(req.body.image)) {
+        // 배열을 시퀄라이즈 create하여 넣어주면 promise 배열이 된다.
+        // DB에 파일 자체를 저장하는 것이 아니라 파일은 uploads폴더, DB에는 파일 주소를 넣는다.
+        // 파일은 캐싱을 할 수 있지만 DB에 넣으면 캐싱을 하지 못한다.
+        // 그래서 파일은 S3클라우드에 올려서 CDN 캐싱을 적용하고, DB에는 이미지 주소만 저장한다.
+        const images = await Promise.all(
+          req.body.image.map((image) => Image.create({ src: image }))
+        );
+        await post.addImages(images);
+      }
+      // 이미지를 하나 올리면 imgae: img1.png
+      else {
+        const image = await Image.create({ src: req.body.image });
+        await post.addImages(image);
+      }
+    }
     const fullPost = await Post.findOne({
       where: { id: post.id },
       include: [
@@ -46,6 +89,17 @@ router.post("/", isLoggedIn, async (req, res, next) => {
     next(error);
   }
 });
+
+// POST /post/images
+router.post(
+  "/images",
+  isLoggedIn,
+  upload.array("image"),
+  async (req, res, next) => {
+    console.log(req.files);
+    res.json(req.files.map((v) => v.filename));
+  }
+);
 
 router.post("/:postId/comment", isLoggedIn, async (req, res, next) => {
   try {
