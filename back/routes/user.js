@@ -111,11 +111,11 @@ router.post("/", isNotLoggedIn, async (req, res, next) => {
 });
 
 router.post("/logout", isLoggedIn, (req, res) => {
+  // 패스포트 버전업되어 로그아웃 세션 디스트로이를 안에 넣어줬다.
   req.logout(() => {
-    res.redirect("/");
+    req.session.destroy();
+    res.send("ok");
   });
-  req.session.destroy();
-  res.send("ok");
 });
 
 router.patch("/nickname", isLoggedIn, async (req, res, next) => {
