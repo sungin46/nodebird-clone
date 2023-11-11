@@ -36,8 +36,10 @@ const Home = () => {
       ) {
         // loadPostLoading을 이용해서 request를 한 번만 보낼 수 있게 설정한다.
         if (hasMorePosts && !loadPostsLoading) {
+          const lastId = mainPosts[mainPosts.length - 1]?.id;
           dispatch({
             type: LOAD_POST_REQUEST,
+            lastId,
           });
         }
       }
@@ -47,7 +49,7 @@ const Home = () => {
       // 메모리에 쌓이기 때문에 이벤트리스너 삭제
       window.removeEventListener("scroll", onScroll);
     };
-  }, [hasMorePosts, loadPostsLoading]);
+  }, [hasMorePosts, loadPostsLoading, mainPosts]);
 
   return (
     <AppLayout>

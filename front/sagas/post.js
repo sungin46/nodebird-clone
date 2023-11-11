@@ -106,13 +106,13 @@ function* unlikePost(action) {
   }
 }
 
-function loadPostsAPI(data) {
-  return axios.get("/posts", data);
+function loadPostsAPI(lastId) {
+  return axios.get(`/posts?lastId=${lastId || 0}`);
 }
 
 function* loadPosts(action) {
   try {
-    const result = yield call(loadPostsAPI, action.data);
+    const result = yield call(loadPostsAPI, action.lastId);
     yield put({
       type: LOAD_POST_SUCCESS,
       data: result.data,
@@ -122,7 +122,6 @@ function* loadPosts(action) {
       type: LOAD_POST_FAILURE,
       error: err.response.data,
     });
-    alert(err);
   }
 }
 

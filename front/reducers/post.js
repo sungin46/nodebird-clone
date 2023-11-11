@@ -154,8 +154,8 @@ const reducer = (state = initialState, action) =>
       case LOAD_POST_SUCCESS:
         draft.loadPostsLoading = false;
         draft.loadPostsDone = true;
-        draft.mainPosts = action.data.concat(draft.mainPosts);
-        draft.hasMorePosts = draft.mainPosts.length < 50;
+        draft.mainPosts = draft.mainPosts.concat(action.data);
+        draft.hasMorePosts = action.data.length === 10;
         break;
       case LOAD_POST_FAILURE:
         draft.loadPostsLoading = false;
@@ -208,19 +208,6 @@ const reducer = (state = initialState, action) =>
         draft.addCommentLoading = false;
         draft.addCommentDone = true;
         break;
-        // const postIndex = state.mainPosts.findIndex(
-        //   (v) => v.id === action.data.postId
-        // );
-        // const post = { ...state.mainPosts[postIndex] };
-        // post.Comments = [dummyCommnets(action.data.content), ...post.Comments];
-        // const mainPosts = [...state.mainPosts];
-        // mainPosts[postIndex] = post;
-        // return {
-        //   ...state,
-        //   mainPosts,
-        //   addCommentLoading: false,
-        //   addCommentDone: true,
-        // };
       }
       case ADD_COMMENT_FAILURE:
         draft.addCommentLoading = false;
