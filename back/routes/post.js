@@ -5,7 +5,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const { Post, Comment, Image, User } = require("../models");
+const { Post, Comment, Image, User, Hashtag } = require("../models");
 const { isLoggedIn } = require("./middlewares");
 
 const router = express.Router();
@@ -35,10 +35,19 @@ const upload = multer({
 // POST /post
 router.post("/", isLoggedIn, upload.none(), async (req, res, next) => {
   try {
+    const hashtags = req.body.content.match(/#[^\s]+/g);
     const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id,
     });
+    if (hashtags) {
+      const result = await Promise.all(
+        hashtags.map((tag) =>
+          Hashtag.findOrCreate({ where: { name: tag.slice(1).toLowerCase() } })
+        )
+      ); // result의 모양이 [[노드, true], [익스프레스, true]] 형태로 오기때문에 첫번째 인자만 가져오도록 한다.
+      await post.addHashtags(result.map((v) => v[0]));
+    }
     if (req.body.image) {
       // 이미지를 여러개 올리면 image: [img1.png, img2.png]
       if (Array.isArray(req.body.image)) {
