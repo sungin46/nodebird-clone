@@ -297,6 +297,23 @@ router.patch("/:postId/like", isLoggedIn, async (req, res, next) => {
   }
 });
 
+//DELETE /post/1/like
+router.delete("/:postId/like", isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+    });
+    if (!post) {
+      return res.status(403).send("존재하지 않는 게시글입니다.");
+    }
+    await post.removeLikers(req.user.id);
+    res.status(200).json({ PostId: post.id, UserId: req.user.id });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 // DELETE /post/1
 router.delete("/:postId", isLoggedIn, async (req, res, next) => {
   try {
