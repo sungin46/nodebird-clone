@@ -11,6 +11,7 @@ const path = require("path");
 const postRouter = require("./routes/post");
 const postsRouter = require("./routes/posts");
 const userRouter = require("./routes/user");
+const hashtagRouter = require("./routes/hashtag");
 const db = require("./models");
 const passportConfig = require("./passport");
 
@@ -57,6 +58,7 @@ app.get("/", (req, res) => {
 app.use("/post", postRouter);
 app.use("/posts", postsRouter);
 app.use("/user", userRouter);
+app.use("/hashtag", hashtagRouter);
 
 // 기본적으로도 마지막 부분에서 에러처리가 되지만 커스터마이징을 하고싶다면 따로 에러처리 미들웨어를 선언해서 커스터마이징이 가능하다.
 // app.use((err, req, res, next) => {});

@@ -39,7 +39,7 @@ const PostCard = ({ post }) => {
       type: LIKE_POST_REQUEST,
       data: post.id,
     });
-  }, []);
+  }, [id]);
 
   const onUnLike = useCallback(() => {
     if (!id) {
@@ -49,7 +49,7 @@ const PostCard = ({ post }) => {
       type: UNLIKE_POST_REQUEST,
       data: post.id,
     });
-  }, []);
+  }, [id]);
 
   const onToggleComment = useCallback(() => {
     setCommentFormOppend((prev) => !prev);

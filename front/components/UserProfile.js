@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequestAction } from "../reducers/user";
 
-const CardMeta = styled(Card.Meta)`
+export const CardMeta = styled(Card.Meta)`
   margin: 10px 0;
 `;
 
