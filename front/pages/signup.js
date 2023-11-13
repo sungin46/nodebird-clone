@@ -11,7 +11,7 @@ import useInput from "../hooks/useInput";
 import { LOAD_MY_INFO_REQUEST, SIGN_UP_REQUEST } from "../reducers/user";
 import AppLayout from "../components/AppLayout";
 import wrapper from "../store/configureStore";
-import { LOAD_POST_REQUEST } from "../reducers/post";
+import { LOAD_POSTS_REQUEST } from "../reducers/post";
 
 const ErrorMessage = styled.div`
   color: red;
@@ -159,7 +159,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         type: LOAD_MY_INFO_REQUEST,
       });
       store.dispatch({
-        type: LOAD_POST_REQUEST,
+        type: LOAD_POSTS_REQUEST,
       });
       store.dispatch(END);
       await store.sagaTask.toPromise();

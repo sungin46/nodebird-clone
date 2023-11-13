@@ -14,7 +14,7 @@ import {
   LOAD_MY_INFO_REQUEST,
 } from "../reducers/user";
 import wrapper from "../store/configureStore";
-import { LOAD_POST_REQUEST } from "../reducers/post";
+import { LOAD_POSTS_REQUEST } from "../reducers/post";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -63,7 +63,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         type: LOAD_MY_INFO_REQUEST,
       });
       store.dispatch({
-        type: LOAD_POST_REQUEST,
+        type: LOAD_POSTS_REQUEST,
       });
       store.dispatch(END);
       await store.sagaTask.toPromise();
