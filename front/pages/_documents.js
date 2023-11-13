@@ -24,6 +24,8 @@ export default class MyDocument extends Document {
           </>
         ),
       };
+    } catch (error) {
+      console.error(error);
     } finally {
       sheet.seal();
     }
@@ -37,6 +39,8 @@ export default class MyDocument extends Document {
         </Head>
         <body>
           <Main />
+          {/* 브라우저에서 CSS의 SSR이 적용되지 않을 수 있기 때문에 추가 */}
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015%2Ces2016%2Ces2017%2Ces2018%2Ces2019%2Ces2022%2Ces2021%2Ces2020" />
           <NextScript />
         </body>
       </Html>
