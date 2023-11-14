@@ -6,11 +6,13 @@
   "dependencies": {
     "@ant-design/compatible": "^5.1.2",
     "@ant-design/icons": "^5.2.6",
+    "@next/bundle-analyzer": "^14.0.2",
     "antd": "^5.9.2",
     "axios": "^1.5.0",
     "busboy": "^1.6.0",
     "caniuse-lite": "^1.0.30001538",
     "client-only": "^0.0.1",
+    "cross-env": "^7.0.3",
     "faker": "^5.5.3",
     "glob-to-regexp": "^0.4.1",
     "graceful-fs": "^4.2.11",
@@ -46,7 +48,7 @@
   },
   "scripts": {
     "dev": "next",
-    "build": "next build"
+    "build": "cross-env ANALYZE=true NODE_ENV=production next build"
   },
   "author": "Hong Sung In",
   "license": "ISC",
