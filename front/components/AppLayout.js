@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useCallback } from "react";
 import propTypes from "prop-types";
 import Link from "next/link";
 import { Menu, Input, Row, Col } from "antd";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
+import Router from "next/router";
 
 import UserProfile from "./UserProfile";
 import LoginForm from "./LoginForm";
+import useInput from "../hooks/useInput";
 
 const SearchInput = styled(Input.Search)`
   vertical-align: middle;
@@ -20,29 +22,33 @@ const AppLayout = ({ children }) => {
   // 최적화 때문에 둘 중 어느것을 사용할 지 정하면 된다.
   // const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const { me } = useSelector((state) => state.user);
+  const [searchInput, onChangeSearchInput] = useInput("");
+
+  const onSearch = useCallback(() => {
+    Router.push(`/hashtag/${searchInput}`);
+  }, [searchInput]);
 
   return (
     <div>
-      <Menu mode="horizontal">
-        <Menu.Item>
-          <Link href="/" legacyBehavior>
-            <a>노드버드</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="/profile" legacyBehavior>
-            <a>프로필</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <SearchInput enterButton />
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="/signup" legacyBehavior>
-            <a>회원가입</a>
-          </Link>
-        </Menu.Item>
-      </Menu>
+      <Menu
+        mode="horizontal"
+        items={[
+          { label: <Link href="/">노드버드</Link>, key: "/" },
+          { label: <Link href="/profile">프로필</Link>, key: "/profile" },
+          {
+            label: (
+              <SearchInput
+                enterButton
+                value={searchInput}
+                onChange={onChangeSearchInput}
+                onSearch={onSearch}
+              />
+            ),
+            key: "/search",
+          },
+          { label: <Link href="/signup">회원가입</Link>, key: "/signup" },
+        ]}
+      />
       <Row gutter={8}>
         <Col xs={24} md={6}>
           {me ? <UserProfile /> : <LoginForm />}

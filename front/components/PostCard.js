@@ -11,6 +11,7 @@ import {
 // antd 4.x 버전에 있던 Comment가 5.x 버전으로 넘어오면서 @ant-design.compatible로 넘겨졌다.
 import { Comment } from "@ant-design/compatible";
 import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
 import PostImages from "./PostImages";
 import CommentForm from "./CommentForm";
 import PostCardContent from "./PostCardContent";
@@ -130,14 +131,26 @@ const PostCard = ({ post }) => {
             }
           >
             <Card.Meta
-              avatar={post.Retweet.User.nickname[0]}
+              avatar={
+                <Link href={`/user/${post.Retweet.User.id}`} legacyBehavior>
+                  <a>
+                    <Avatar>{post.Retweet.User.nickname[0]}</Avatar>
+                  </a>
+                </Link>
+              }
               title={post.Retweet.User.nickname}
               description={<PostCardContent postData={post.Retweet.content} />}
             />
           </Card>
         ) : (
           <Card.Meta
-            avatar={post.User.nickname[0]}
+            avatar={
+              <Link href={`/user/${post.User.id}`} legacyBehavior>
+                <a>
+                  <Avatar>{post.User.nickname[0]}</Avatar>
+                </a>
+              </Link>
+            }
             title={post.User.nickname}
             description={<PostCardContent postData={post.content} />}
           />
@@ -155,7 +168,13 @@ const PostCard = ({ post }) => {
               <li>
                 <Comment
                   author={item.User.nickname}
-                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  avatar={
+                    <Link href={`/user/${post.User.id}`} legacyBehavior>
+                      <a>
+                        <Avatar>{item.User.nickname[0]}</Avatar>
+                      </a>
+                    </Link>
+                  }
                   content={item.content}
                 />
               </li>
