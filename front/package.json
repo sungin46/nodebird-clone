@@ -17,6 +17,7 @@
     "immer": "^10.0.2",
     "js-tokens": "^4.0.0",
     "loose-envify": "^1.4.0",
+    "moment": "^2.29.4",
     "nanoid": "^3.3.6",
     "next": "^13.5.2",
     "next-redux-wrapper": "^8.1.0",

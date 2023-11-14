@@ -12,6 +12,8 @@ import {
 import { Comment } from "@ant-design/compatible";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
+import moment from "moment";
+
 import PostImages from "./PostImages";
 import CommentForm from "./CommentForm";
 import PostCardContent from "./PostCardContent";
@@ -22,6 +24,8 @@ import {
   RETWEET_REQUEST,
 } from "../reducers/post";
 import FollowButton from "./FollowButton";
+
+moment.locale("ko");
 
 const PostCard = ({ post }) => {
   // 옵셔널 체이닝 - JS2020버전에서 추가되었으며 중첩 객체에 빠르게 접근할 수 있다.
@@ -130,6 +134,9 @@ const PostCard = ({ post }) => {
               )
             }
           >
+            <div style={{ float: "right" }} suppressHydrationWarning>
+              {moment(post.createdAt).startOf("hour").fromNow()}
+            </div>
             <Card.Meta
               avatar={
                 <Link href={`/user/${post.Retweet.User.id}`} legacyBehavior>
@@ -143,17 +150,22 @@ const PostCard = ({ post }) => {
             />
           </Card>
         ) : (
-          <Card.Meta
-            avatar={
-              <Link href={`/user/${post.User.id}`} legacyBehavior>
-                <a>
-                  <Avatar>{post.User.nickname[0]}</Avatar>
-                </a>
-              </Link>
-            }
-            title={post.User.nickname}
-            description={<PostCardContent postData={post.content} />}
-          />
+          <>
+            <div style={{ float: "right" }} suppressHydrationWarning>
+              {moment(post.createdAt).startOf("hour").fromNow()}
+            </div>
+            <Card.Meta
+              avatar={
+                <Link href={`/user/${post.User.id}`} legacyBehavior>
+                  <a>
+                    <Avatar>{post.User.nickname[0]}</Avatar>
+                  </a>
+                </Link>
+              }
+              title={post.User.nickname}
+              description={<PostCardContent postData={post.content} />}
+            />
+          </>
         )}
       </Card>
       {commentFormOppened && (
