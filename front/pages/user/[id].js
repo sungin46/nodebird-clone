@@ -50,17 +50,31 @@ const User = () => {
 
   return (
     <AppLayout>
-      <Head>
-        <title>{userInfo.nickname}님의 글</title>
-        <meta name="description" content={`${userInfo.nickname}님의 게시글`} />
-        <meta property="og:title" content={`${userInfo.nickname}님의 게시글`} />
-        <meta
-          property="og:description"
-          content={`${userInfo.nickname}님의 게시글`}
-        />
-        <meta property="og:image" content="http://localhost:3000/favicon.ico" />
-        <meta property="og:url" content={`http://localhost:3000/user/${id}`} />
-      </Head>
+      {userInfo && (
+        <Head>
+          <title>{userInfo.nickname}님의 글</title>
+          <meta
+            name="description"
+            content={`${userInfo.nickname}님의 게시글`}
+          />
+          <meta
+            property="og:title"
+            content={`${userInfo.nickname}님의 게시글`}
+          />
+          <meta
+            property="og:description"
+            content={`${userInfo.nickname}님의 게시글`}
+          />
+          <meta
+            property="og:image"
+            content="http://localhost:3000/favicon.ico"
+          />
+          <meta
+            property="og:url"
+            content={`http://localhost:3000/user/${id}`}
+          />
+        </Head>
+      )}
       {userInfo ? (
         <Card
           actions={[
