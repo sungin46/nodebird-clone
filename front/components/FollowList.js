@@ -5,7 +5,7 @@ import { StopOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { REMOVE_FOLLOWER_REQUEST, UNFOLLOW_REQUEST } from "../reducers/user";
 
-const FollowList = ({ header, data }) => {
+const FollowList = ({ header, data, onClickMore, loading }) => {
   const dispatch = useDispatch();
   // 반복문 안에서 값을 가져와야 할 경우, 고차 함수를 사용해서 값을 불러온다.
   const onUnfollow = (id) => () => {
@@ -29,7 +29,9 @@ const FollowList = ({ header, data }) => {
       header={<div>{header}</div>}
       loadMore={
         <div style={{ textAlign: "center", margin: "10px 0" }}>
-          <Button>더 보기</Button>
+          <Button onClick={onClickMore} loading={loading}>
+            더 보기
+          </Button>
         </div>
       }
       bordered
@@ -52,6 +54,8 @@ const FollowList = ({ header, data }) => {
 FollowList.propTypes = {
   header: Proptypes.string.isRequired,
   data: Proptypes.array.isRequired,
+  onClickMore: Proptypes.func.isRequired,
+  loading: Proptypes.bool.isRequired,
 };
 
 export default FollowList;

@@ -52,7 +52,9 @@ router.get("/followers", isLoggedIn, async (req, res, next) => {
     if (!user) {
       res.status(403).send("없는 회원은 언팔로우할 수 없습니다.");
     }
-    const followers = await user.getFollowers();
+    const followers = await user.getFollowers({
+      limit: parseInt(req.query.limit),
+    });
     res.status(200).json(followers);
   } catch (error) {
     console.error(error);
@@ -69,8 +71,104 @@ router.get("/followings", isLoggedIn, async (req, res, next) => {
     if (!user) {
       res.status(403).send("없는 회원은 언팔로우할 수 없습니다.");
     }
-    const followings = await user.getFollowings();
+    const followings = await user.getFollowings({
+      limit: parseInt(req.query.limit),
+    });
     res.status(200).json(followings);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// POST /user/login
+// 원래는 passport.autenticate를 사용하면서 req, res, next를 사용할 수 없었지만
+// 미들웨어 확장으로 req, res, next를 사용할 수 있게 되었다.
+router.post("/login", isNotLoggedIn, (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      console.error(err);
+      return next(err);
+    }
+    if (info) {
+      return res.status(401).send(info.reason);
+    }
+    return req.login(user, async (loginErr) => {
+      if (loginErr) {
+        console.err(loginErr);
+        return next(loginErr);
+      }
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: user.id },
+        attributes: {
+          exclude: ["password"],
+        },
+        include: [
+          {
+            // models에 Post가 hasMany로 선언되어 model: Post가 복수형으로 변경되어 me.Posts가 된다.
+            model: Post,
+            attributes: ["id"],
+          },
+          {
+            model: User,
+            as: "Followings",
+            attributes: ["id"],
+          },
+          {
+            model: User,
+            as: "Followers",
+            attributes: ["id"],
+          },
+        ],
+      });
+      return res.status(200).json(fullUserWithoutPassword);
+    });
+  })(req, res, next);
+});
+
+// POST /user/
+router.post("/", isNotLoggedIn, async (req, res, next) => {
+  try {
+    const exUser = await User.findOne({
+      where: {
+        email: req.body.email,
+      },
+    });
+    if (exUser) {
+      return res.status(403).send("이미 사용 중인 이메일입니다.");
+    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 11);
+    await User.create({
+      email: req.body.email,
+      nickname: req.body.nickname,
+      password: hashedPassword,
+    });
+    res.status(201).send("ok");
+  } catch (error) {
+    console.error(error);
+    next(error); //500
+  }
+});
+
+router.post("/logout", isLoggedIn, (req, res) => {
+  // 패스포트 버전업되어 로그아웃 세션 디스트로이를 안에 넣어줬다.
+  req.logout(() => {
+    req.session.destroy();
+    res.send("ok");
+  });
+});
+
+router.patch("/nickname", isLoggedIn, async (req, res, next) => {
+  try {
+    await User.update(
+      {
+        nickname: req.body.nickname,
+      },
+      {
+        where: { id: req.user.id },
+      }
+    );
+    res.status(200).json({ nickname: req.body.nickname });
   } catch (error) {
     console.error(error);
     next(error);
@@ -172,100 +270,6 @@ router.get("/:userId/posts", async (req, res, next) => {
       ],
     });
     res.status(200).json(posts);
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-// POST /user/login
-// 원래는 passport.autenticate를 사용하면서 req, res, next를 사용할 수 없었지만
-// 미들웨어 확장으로 req, res, next를 사용할 수 있게 되었다.
-router.post("/login", isNotLoggedIn, (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) {
-      console.error(err);
-      return next(err);
-    }
-    if (info) {
-      return res.status(401).send(info.reason);
-    }
-    return req.login(user, async (loginErr) => {
-      if (loginErr) {
-        console.err(loginErr);
-        return next(loginErr);
-      }
-      const fullUserWithoutPassword = await User.findOne({
-        where: { id: user.id },
-        attributes: {
-          exclude: ["password"],
-        },
-        include: [
-          {
-            // models에 Post가 hasMany로 선언되어 model: Post가 복수형으로 변경되어 me.Posts가 된다.
-            model: Post,
-            attributes: ["id"],
-          },
-          {
-            model: User,
-            as: "Followings",
-            attributes: ["id"],
-          },
-          {
-            model: User,
-            as: "Followers",
-            attributes: ["id"],
-          },
-        ],
-      });
-      return res.status(200).json(fullUserWithoutPassword);
-    });
-  })(req, res, next);
-});
-
-// POST /user/
-router.post("/", isNotLoggedIn, async (req, res, next) => {
-  try {
-    const exUser = await User.findOne({
-      where: {
-        email: req.body.email,
-      },
-    });
-    if (exUser) {
-      return res.status(403).send("이미 사용 중인 이메일입니다.");
-    }
-    const hashedPassword = await bcrypt.hash(req.body.password, 11);
-    await User.create({
-      email: req.body.email,
-      nickname: req.body.nickname,
-      password: hashedPassword,
-    });
-    res.status(201).send("ok");
-  } catch (error) {
-    console.error(error);
-    next(error); //500
-  }
-});
-
-router.post("/logout", isLoggedIn, (req, res) => {
-  // 패스포트 버전업되어 로그아웃 세션 디스트로이를 안에 넣어줬다.
-  req.logout(() => {
-    req.session.destroy();
-    res.send("ok");
-  });
-});
-
-router.patch("/nickname", isLoggedIn, async (req, res, next) => {
-  try {
-    await User.update(
-      {
-        nickname: req.body.nickname,
-      },
-      {
-        where: { id: req.user.id },
-      }
-    );
-    res.status(200).json({ nickname: req.body.nickname });
   } catch (error) {
     console.error(error);
     next(error);
